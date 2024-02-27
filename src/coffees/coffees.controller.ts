@@ -10,19 +10,31 @@ import {
   Query,
   Patch,
   Delete,
+  Sse,
+  Header,
 } from '@nestjs/common';
 import { CoffeesService } from './coffees.service';
 import { CreateCoffeesDto } from './dto/create-coffees.dto/create-coffees.dto';
+import { Observable, interval, map } from 'rxjs';
 
 @Controller('coffees')
 export class CoffeesController {
-  constructor(private readonly coffeesService: CoffeesService) {}
+  constructor(private readonly coffeesService: CoffeesService) { }
+  // @Get('sse')
+  // // @Sse()
+  // // @Header('Content-type', 'text/event-stream')
+  // sse(): Observable<any> {
+  //   return interval(1000).pipe(map((_) => ({ data: 'hello world2' })));
+  // }
   @Get('findCooffees')
-  findAll() {
+  @Sse()
+  // @Header('Content-type', 'text/event-stream')
+  findAll(): Observable<any> {
     // const { limit, offect } = paginationQuery;
-    return this.coffeesService.getAll();
-  }
+    // return 111,
+    return interval(1000).pipe(map((_) => ({ data: this.coffeesService.getAll() })));
 
+  }
   @Get(':id')
   findOne(@Param('id') id: number) {
     return this.coffeesService.getOne(id);
@@ -43,4 +55,11 @@ export class CoffeesController {
   remove(@Param('id') id) {
     return this.coffeesService.delete(id);
   }
+  // @Get('sse')
+  // // @Sse()
+  // // @Header('Content-type', 'text/event-stream')
+  // sse(): Observable<any> {
+  //   return interval(1000).pipe(map((_) => ({ data: 'hello world2' })));
+  // }
+
 }
